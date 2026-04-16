@@ -22,13 +22,14 @@ const libFableServiceProviderBase = require('fable-serviceproviderbase');
  */
 const PROVIDER_MODULES =
 {
-	'MySQL':      'meadow-connection-mysql',
-	'PostgreSQL': 'meadow-connection-postgresql',
-	'MSSQL':      'meadow-connection-mssql',
-	'SQLite':     'meadow-connection-sqlite',
-	'Solr':       'meadow-connection-solr',
-	'RocksDB':    'meadow-connection-rocksdb',
-	'MongoDB':    'meadow-connection-mongodb',
+	'MySQL':            'meadow-connection-mysql',
+	'PostgreSQL':       'meadow-connection-postgresql',
+	'MSSQL':            'meadow-connection-mssql',
+	'SQLite':           'meadow-connection-sqlite',
+	'Solr':             'meadow-connection-solr',
+	'RocksDB':          'meadow-connection-rocksdb',
+	'MongoDB':          'meadow-connection-mongodb',
+	'RetoldDataBeacon': 'meadow-connection-retold-databeacon',
 };
 
 const defaultConnectionManagerOptions =
