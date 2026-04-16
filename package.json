@@ -1,6 +1,6 @@
 {
 	"name": "meadow-connection-manager",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Server-side meadow connection manager. Parses connection configurations and instantiates database providers with graceful fallbacks for missing drivers.",
 	"main": "source/Meadow-ConnectionManager.js",
 	"scripts": {
@@ -9,15 +9,26 @@
 	},
 	"mocha": {
 		"diff": true,
-		"extension": ["js"],
+		"extension": [
+			"js"
+		],
 		"package": "./package.json",
 		"reporter": "spec",
 		"slow": "75",
 		"timeout": "5000",
 		"ui": "tdd",
-		"watch-files": ["source/**/*.js", "test/**/*.js"]
+		"watch-files": [
+			"source/**/*.js",
+			"test/**/*.js"
+		]
 	},
-	"keywords": ["meadow", "connection", "database", "provider", "manager"],
+	"keywords": [
+		"meadow",
+		"connection",
+		"database",
+		"provider",
+		"manager"
+	],
 	"author": "Steven Velozo <steven@velozo.com>",
 	"license": "MIT",
 	"dependencies": {
@@ -33,12 +44,26 @@
 		"meadow-connection-mongodb": ">=1.0.0"
 	},
 	"peerDependenciesMeta": {
-		"meadow-connection-mysql": { "optional": true },
-		"meadow-connection-mssql": { "optional": true },
-		"meadow-connection-postgresql": { "optional": true },
-		"meadow-connection-sqlite": { "optional": true },
-		"meadow-connection-solr": { "optional": true },
-		"meadow-connection-rocksdb": { "optional": true },
-		"meadow-connection-mongodb": { "optional": true }
+		"meadow-connection-mysql": {
+			"optional": true
+		},
+		"meadow-connection-mssql": {
+			"optional": true
+		},
+		"meadow-connection-postgresql": {
+			"optional": true
+		},
+		"meadow-connection-sqlite": {
+			"optional": true
+		},
+		"meadow-connection-solr": {
+			"optional": true
+		},
+		"meadow-connection-rocksdb": {
+			"optional": true
+		},
+		"meadow-connection-mongodb": {
+			"optional": true
+		}
 	}
 }
