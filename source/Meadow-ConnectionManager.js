@@ -333,6 +333,18 @@ class MeadowConnectionManager extends libFableServiceProviderBase
 	/**
 	 * Test a connection configuration without persisting it.
 	 *
+	 * Connect alone is not a meaningful test for lazy-pool drivers (mysql,
+	 * mysql2, node-postgres) — `createPool()` returns a pool object before
+	 * any TCP socket is opened, so a misconfigured host/port/credential
+	 * surfaces only on first query. Without a probe, testConnection would
+	 * report success against unreachable databases and the operator only
+	 * discovers the failure when introspect / a real query crashes.
+	 *
+	 * The probe issues a trivial round-trip per Type (SELECT 1, ping, etc.)
+	 * via _probeConnection. Driver types that validate during connect
+	 * (RocksDB / SQLite / MeadowEndpoints / RetoldDataBeacon) are treated as
+	 * already-probed and short-circuit.
+	 *
 	 * @param {object} pConfig
 	 * @param {function} fCallback — function(pError, pResult)
 	 */
@@ -346,12 +358,125 @@ class MeadowConnectionManager extends libFableServiceProviderBase
 				{
 					return fCallback(null, { Success: false, Error: pError.message });
 				}
-				this.disconnect(tmpTestName,
-					() =>
+				this._probeConnection(pConnection,
+					(pProbeError) =>
 					{
-						return fCallback(null, { Success: true });
+						this.disconnect(tmpTestName,
+							() =>
+							{
+								if (pProbeError)
+								{
+									return fCallback(null, { Success: false, Error: pProbeError.message });
+								}
+								return fCallback(null, { Success: true });
+							});
 					});
 			});
+	}
+
+	/**
+	 * Issue a cheap round-trip against a live connection so testConnection
+	 * fails when the underlying driver succeeds at pool-creation but cannot
+	 * actually reach the server. Internal — not part of the public API.
+	 *
+	 * Per-driver probes:
+	 *   MySQL / PostgreSQL          pool.query('SELECT 1')
+	 *   MSSQL                       pool.request().query('SELECT 1')
+	 *   SQLite                      db.prepare('SELECT 1').get()  (also opens the file lazily)
+	 *   MongoDB                     db.command({ ping: 1 })
+	 *   Solr                        search('*:*', { rows: 0 })  (HEAD-equivalent)
+	 *   RocksDB                     no-op (file-based, opens during connect)
+	 *   MeadowEndpoints             no-op (Authenticate is called during connect)
+	 *   RetoldDataBeacon            no-op (handshake happens during connect)
+	 *   <unknown>                   no-op (don't fail-closed on new drivers)
+	 *
+	 * @param {object} pConn — the entry returned by connect():
+	 *                         { name, hash, type, config, instance, status }
+	 * @param {function} fCallback — function(pError)  (no value on success)
+	 */
+	_probeConnection(pConn, fCallback)
+	{
+		if (!pConn || !pConn.instance) { return fCallback(null); }
+		let tmpType = pConn.type;
+		let tmpProvider = pConn.instance;
+
+		try
+		{
+			switch (tmpType)
+			{
+				case 'MySQL':
+				{
+					let tmpPool = tmpProvider.pool || tmpProvider;
+					if (!tmpPool || typeof tmpPool.query !== 'function') { return fCallback(null); }
+					return tmpPool.query('SELECT 1', (pError) => fCallback(pError || null));
+				}
+				case 'PostgreSQL':
+				{
+					let tmpPool = tmpProvider.pool || tmpProvider;
+					if (!tmpPool || typeof tmpPool.query !== 'function') { return fCallback(null); }
+					let tmpResult = tmpPool.query('SELECT 1', (pError) => fCallback(pError || null));
+					// node-postgres pools may return a Promise on newer versions when
+					// no callback is honored — adopt it defensively.
+					if (tmpResult && typeof tmpResult.then === 'function')
+					{
+						let tmpDelivered = false;
+						tmpResult.then(
+							() => { if (!tmpDelivered) { tmpDelivered = true; fCallback(null); } },
+							(pError) => { if (!tmpDelivered) { tmpDelivered = true; fCallback(pError); } });
+					}
+					return;
+				}
+				case 'MSSQL':
+				{
+					let tmpPool = tmpProvider.pool || tmpProvider;
+					if (!tmpPool || typeof tmpPool.request !== 'function') { return fCallback(null); }
+					let tmpRequest = tmpPool.request();
+					let tmpResult = tmpRequest.query('SELECT 1');
+					if (tmpResult && typeof tmpResult.then === 'function')
+					{
+						return tmpResult.then(() => fCallback(null), (pError) => fCallback(pError));
+					}
+					return fCallback(null);
+				}
+				case 'SQLite':
+				{
+					let tmpDB = tmpProvider.db || tmpProvider;
+					if (!tmpDB || typeof tmpDB.prepare !== 'function') { return fCallback(null); }
+					tmpDB.prepare('SELECT 1').get();
+					return fCallback(null);
+				}
+				case 'MongoDB':
+				{
+					let tmpDB = tmpProvider.db || tmpProvider.pool || tmpProvider;
+					if (!tmpDB || typeof tmpDB.command !== 'function') { return fCallback(null); }
+					let tmpResult = tmpDB.command({ ping: 1 });
+					if (tmpResult && typeof tmpResult.then === 'function')
+					{
+						return tmpResult.then(() => fCallback(null), (pError) => fCallback(pError));
+					}
+					return fCallback(null);
+				}
+				case 'Solr':
+				{
+					let tmpClient = tmpProvider.pool || tmpProvider;
+					if (!tmpClient || typeof tmpClient.search !== 'function') { return fCallback(null); }
+					let tmpDelivered = false;
+					let tmpDeliver = (pError) => { if (!tmpDelivered) { tmpDelivered = true; fCallback(pError || null); } };
+					let tmpResult = tmpClient.search('q=*:*&rows=0', tmpDeliver);
+					if (tmpResult && typeof tmpResult.then === 'function')
+					{
+						tmpResult.then(() => tmpDeliver(null), (pError) => tmpDeliver(pError));
+					}
+					return;
+				}
+				default:
+					return fCallback(null);
+			}
+		}
+		catch (pError)
+		{
+			return fCallback(pError);
+		}
 	}
 
 	// ─────────────────────────────────────────────
