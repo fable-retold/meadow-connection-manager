@@ -161,3 +161,4 @@ out
 
 # Quackage takes care of these for me!
 *.quackage.bak
+dist/indoctrinate_content_staging/
