@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-05-26T21:12:27.237Z",
+	"Generated": "2026-05-30T22:11:57.858Z",
 	"Mode": "module",
 	"GitHubOrg": "fable-retold",
 	"DefaultBranch": "master",
@@ -10,13 +10,101 @@
 		"Branch": "master",
 		"HasDocs": true,
 		"HasCover": true,
-		"Sidebar": [],
+		"Sidebar": [
+			{
+				"Title": "Getting Started",
+				"Children": [
+					{
+						"Title": "Overview",
+						"Path": "README.md"
+					},
+					{
+						"Title": "Quickstart",
+						"Path": "quickstart.md"
+					}
+				]
+			},
+			{
+				"Title": "Architecture",
+				"Children": [
+					{
+						"Title": "Hub & Spoke Design",
+						"Path": "architecture.md"
+					}
+				]
+			},
+			{
+				"Title": "API Reference",
+				"Children": [
+					{
+						"Title": "Full Reference",
+						"Path": "api.md"
+					}
+				]
+			},
+			{
+				"Title": "Connection Providers",
+				"Children": [
+					{
+						"Title": "MySQL",
+						"Path": "https://fable-retold.github.io/meadow-connection-mysql"
+					},
+					{
+						"Title": "PostgreSQL",
+						"Path": "https://fable-retold.github.io/meadow-connection-postgresql"
+					},
+					{
+						"Title": "MSSQL",
+						"Path": "https://fable-retold.github.io/meadow-connection-mssql"
+					},
+					{
+						"Title": "SQLite",
+						"Path": "https://fable-retold.github.io/meadow-connection-sqlite"
+					}
+				]
+			},
+			{
+				"Title": "Related Modules",
+				"Children": [
+					{
+						"Title": "retold-data-service",
+						"Path": "https://fable-retold.github.io/retold-data-service"
+					},
+					{
+						"Title": "pict-section-connection-form",
+						"Path": "https://fable-retold.github.io/pict-section-connection-form"
+					},
+					{
+						"Title": "pict-meadow-connection-manager",
+						"Path": "https://fable-retold.github.io/pict-meadow-connection-manager"
+					}
+				]
+			},
+			{
+				"Title": "Retold Ecosystem",
+				"Children": [
+					{
+						"Title": "Meadow",
+						"Path": "https://fable-retold.github.io/meadow/README.md"
+					},
+					{
+						"Title": "Fable",
+						"Path": "https://fable-retold.github.io/fable/README.md"
+					}
+				]
+			}
+		],
 		"DocFiles": [
 			".nojekyll",
+			"README.md",
 			"_brand.json",
 			"_cover.md",
+			"_sidebar.md",
 			"_version.json",
+			"api.md",
+			"architecture.md",
 			"index.html",
+			"quickstart.md",
 			"retold-catalog.json",
 			"retold-keyword-index.json"
 		]
