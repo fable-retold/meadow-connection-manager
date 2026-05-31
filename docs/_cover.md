@@ -1,9 +1,18 @@
-# Meadow-Connection-Manager
+# Meadow Connection Manager
 
-> Server-side meadow connection manager. Parses connection configurations and instantiates database providers with graceful fallbacks for missing drivers.
+> The server-side loader and factory for Meadow database connections
 
-- Read the full documentation for usage, configuration, and reference
+Reads a connection configuration, dispatches on its `Type` to the matching `meadow-connection-*` provider, connects it, and registers the live connection under a name. Drivers are optional peer dependencies, so it fails gracefully for any provider that isn't installed.
 
+- **Type-Dispatched Loading** -- One `connect()` call loads the right provider by `Type`
+- **Named Connections** -- Register and look up connections by name or URL-safe hash
+- **Graceful Fallback** -- Missing optional drivers report a clear error, never a load-time crash
+- **Connection Probing** -- `testConnection()` proves a config can actually reach the server
+- **Form-Schema Discovery** -- Collect each installed provider's connection-form schema for UIs
+
+[Get Started](README.md)
+[Quickstart](quickstart.md)
+[Architecture](architecture.md)
+[API Reference](api.md)
 [GitHub](https://github.com/fable-retold/meadow-connection-manager)
-[Get Started](#meadow-connection-manager)
 
