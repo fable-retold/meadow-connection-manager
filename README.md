@@ -4,7 +4,7 @@
 
 The server-side loader for Meadow database connections. It reads a connection configuration, dispatches on the `Type` field to the matching `meadow-connection-*` provider module, instantiates and connects it, and registers the live connection under a name. Database drivers are optional peer dependencies, so an application installs only the providers it actually uses and the manager fails gracefully for the rest.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[MIT License](LICENSE)
 
 ---
 
