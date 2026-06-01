@@ -1,6 +1,6 @@
 # Meadow Connection Manager
 
-> **[&#9654; Read the Meadow-Connection-Manager Documentation](https://fable-retold.github.io/meadow-connection-manager/)** &mdash; interactive docs with the full API reference.
+> **[Read the Meadow-Connection-Manager Documentation](https://fable-retold.github.io/meadow-connection-manager/)** - interactive docs with the full API reference.
 
 The server-side loader for Meadow database connections. It reads a connection configuration, dispatches on the `Type` field to the matching `meadow-connection-*` provider module, instantiates and connects it, and registers the live connection under a name. Database drivers are optional peer dependencies, so an application installs only the providers it actually uses and the manager fails gracefully for the rest.
 
