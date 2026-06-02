@@ -1,0 +1,28 @@
+graph TB
+	subgraph Hub["Meadow Connection Manager (hub)"]
+		MCM[Dispatch + Lifecycle + Discovery]
+		SAN[Connection-Name Sanitizer]
+	end
+
+	subgraph Spokes["meadow-connection-* providers (spokes)"]
+		P1[meadow-connection-mysql]
+		P2[meadow-connection-postgresql]
+		P3[meadow-connection-mssql]
+		P4[meadow-connection-sqlite]
+		P5[meadow-connection-solr]
+		P6[meadow-connection-mongodb]
+		P7[... rocksdb, oracle, ...]
+	end
+
+	CFG[Connection Config\nType + fields] --> MCM
+	MCM --> SAN
+	MCM -->|Type = MySQL| P1
+	MCM -->|Type = PostgreSQL| P2
+	MCM -->|Type = MSSQL| P3
+	MCM -->|Type = SQLite| P4
+	MCM -->|Type = Solr| P5
+	MCM -->|Type = MongoDB| P6
+	MCM -->|...| P7
+
+	style Hub fill:#e8f4f8,stroke:#2E7D74,stroke-width:2px
+	style Spokes fill:#f5f0e8,stroke:#423D37,stroke-width:1px

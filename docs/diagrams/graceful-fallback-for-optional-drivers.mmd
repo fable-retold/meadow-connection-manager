@@ -1,0 +1,6 @@
+flowchart TD
+	A[connect with Type] --> B{module in dispatch table\nor ProviderModule set?}
+	B -->|No| C[cb Error: unknown provider type]
+	B -->|Yes| D[require module]
+	D -->|throws| E[cb Error: could not load provider,\nnpm install moduleName]
+	D -->|ok| F[instantiate + connect + register]

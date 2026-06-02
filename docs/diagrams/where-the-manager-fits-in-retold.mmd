@@ -1,0 +1,19 @@
+graph TB
+	subgraph Consumers
+		RDS[retold-data-service]
+		PMCM[pict-meadow-connection-manager]
+		PSCF[pict-section-connection-form]
+	end
+
+	MCM[Meadow Connection Manager]
+
+	subgraph Providers
+		PROV[meadow-connection-* family]
+	end
+
+	RDS -->|opens databases via| MCM
+	PMCM -->|drives named connections via| MCM
+	PSCF -->|renders schemas from| MCM
+	MCM -->|loads + connects| PROV
+
+	style MCM fill:#e8f4f8,stroke:#2E7D74,stroke-width:2px

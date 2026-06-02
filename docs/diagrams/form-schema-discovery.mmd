@@ -1,0 +1,8 @@
+flowchart LR
+	A[getAllProviderFormSchemas] --> B[for each provider Type]
+	B --> C[resolve module package.json]
+	C -->|not installed| D[skip]
+	C -->|installed| E[load FormSchema file]
+	E -->|missing / no schema| D
+	E -->|loaded| F[push schema]
+	F --> G[array of schemas]

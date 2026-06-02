@@ -1,0 +1,25 @@
+sequenceDiagram
+	participant App as Application
+	participant MCM as Connection Manager
+	participant SAN as Sanitizer
+	participant Mod as Provider Module
+	participant Inst as Provider Instance
+
+	App->>MCM: connect(name, config, cb)
+	MCM->>SAN: sanitizeConnectionName(name)
+	SAN-->>MCM: hash
+	MCM->>MCM: reject if hash already owned by another name
+	MCM->>MCM: resolve module from config.Type (or ProviderModule)
+	MCM->>Mod: require(moduleName)
+	alt module not installed
+		Mod-->>MCM: load error
+		MCM-->>App: cb(Error "could not load provider ... npm install ...")
+	else module present
+		MCM->>MCM: set fable.settings[Type] = provider config
+		MCM->>Inst: instantiateServiceProviderWithoutRegistration(module)
+		MCM->>MCM: restore previous fable.settings[Type]
+		MCM->>Inst: connectAsync(cb) (if present)
+		Inst-->>MCM: connected
+		MCM->>MCM: register { name, hash, type, config, instance, status }
+		MCM-->>App: cb(null, connection)
+	end
